@@ -20,8 +20,6 @@ server = app.server
 
 # Layout
 app.layout = html.Div([
-    html.H1("Climate Dashboard", style={'textAlign': 'center'}),
-
     html.Div([
         html.Label("Select Country:"),
         dcc.Dropdown(id='country-dropdown', options=[{'label': c, 'value': c} for c in country_options],
