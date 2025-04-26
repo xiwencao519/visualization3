@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import dash
-from dash import dcc, html, Output, Input
+from dash import dcc, html, Output, Input, State
 
 # Load data
 temp_data = pd.read_csv('temp-1901-2020-all.csv')
@@ -37,12 +37,15 @@ app.layout = html.Div([
                    value=2000,
                    marks={str(y): str(y) for y in range(min(year_options), max(year_options)+1, 10)},
                    tooltip={"placement": "bottom", "always_visible": True})
-    ], style={'width': '60%', 'display': 'inline-block', 'padding': '0px 20px 20px 20px'}),
+    ], style={'width': '50%', 'display': 'inline-block', 'padding': '0px 20px 20px 20px'}),
+
+    html.Button('Play', id='play-button', n_clicks=0, style={'margin': '10px'}),
+    dcc.Interval(id='interval-component', interval=500, n_intervals=0, disabled=True),
 
     dcc.Graph(id='dashboard-graph')
 ])
 
-# Callback
+# Callback to update graph
 @app.callback(
     Output('dashboard-graph', 'figure'),
     Input('country-dropdown', 'value'),
@@ -98,8 +101,7 @@ def update_dashboard(country_iso, year):
         if flag != curr_sign:
             runs.append((curr_sign, list(range(start, i))))
             curr_sign, start = flag, i
-    runs.append((curr_sign, list(range(start, len(temps))))
-    )
+    runs.append((curr_sign, list(range(start, len(temps)))))
 
     for is_pos, idxs in runs:
         xs = [x_vals[i] for i in idxs]
@@ -181,6 +183,31 @@ def update_dashboard(country_iso, year):
     )
 
     return fig
+
+# Play/Pause Button callback
+@app.callback(
+    Output('interval-component', 'disabled'),
+    Output('play-button', 'children'),
+    Input('play-button', 'n_clicks'),
+    State('interval-component', 'disabled')
+)
+def toggle_play(n_clicks, disabled):
+    if disabled:
+        return False, 'Pause'
+    else:
+        return True, 'Play'
+
+# Update year by interval
+@app.callback(
+    Output('year-slider', 'value'),
+    Input('interval-component', 'n_intervals'),
+    State('year-slider', 'value')
+)
+def update_year(n_intervals, current_year):
+    next_year = current_year + 1
+    if next_year > max(year_options):
+        next_year = min(year_options)
+    return next_year
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8050)
