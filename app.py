@@ -88,7 +88,7 @@ def update_dashboard(country_iso, year):
     ), row=1, col=1)
 
     fig.update_polars(row=1, col=1,
-                      backgroundcolor='rgba(0,0,0,0)',
+                      bgcolor='rgba(0,0,0,0)',
                       radialaxis=dict(range=[-40, 30], tick0=-40, dtick=20,
                                       showline=True, ticks='outside', tickangle=0),
                       angularaxis=dict(direction='clockwise', rotation=90))
@@ -172,7 +172,7 @@ def update_dashboard(country_iso, year):
         ), row=1, col=3)
 
     fig.update_polars(row=1, col=3,
-                      backgroundcolor='rgba(0,0,0,0)',
+                      bgcolor='rgba(0,0,0,0)',
                       radialaxis=dict(range=[-1, 1.2], tick0=-1, dtick=0.5,
                                       showline=True, ticks='outside', tickfont_size=12),
                       angularaxis=dict(direction='clockwise', rotation=90))
