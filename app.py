@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import dash
 from dash import dcc, html, Output, Input, State
+from dash import callback_context, exceptions
 
 # Load data
 temp_data = pd.read_csv('temp-1901-2020-all.csv')
@@ -184,30 +185,38 @@ def update_dashboard(country_iso, year):
 
     return fig
 
-# Play/Pause Button callback
-@app.callback(
-    Output('interval-component', 'disabled'),
-    Output('play-button', 'children'),
-    Input('play-button', 'n_clicks'),
-    State('interval-component', 'disabled')
-)
-def toggle_play(n_clicks, disabled):
-    if disabled:
-        return False, 'Pause'
-    else:
-        return True, 'Play'
 
-# Update year by interval
 @app.callback(
     Output('year-slider', 'value'),
+    Output('interval-component', 'disabled'),
+    Output('play-button',   'children'),
+    Input('play-button',        'n_clicks'),
     Input('interval-component', 'n_intervals'),
-    State('year-slider', 'value')
+    State('interval-component', 'disabled'),
+    State('year-slider',          'value')
 )
-def update_year(n_intervals, current_year):
-    next_year = current_year + 1
-    if next_year > max(year_options):
-        next_year = min(year_options)
-    return next_year
+def control_playback(n_clicks, n_intervals, disabled, current_year):
+    ctx = callback_context
+    if not ctx.triggered:
+        raise exceptions.PreventUpdate
+    trigger = ctx.triggered[0]['prop_id'].split('.')[0]
 
+    min_year = min(year_options)
+    max_year = max(year_options)
+
+    if trigger == 'play-button':
+        if disabled:
+            if current_year >= max_year:
+                return min_year, False, 'Pause'
+            return current_year, False, 'Pause'
+        else:
+            return current_year, True, 'Play'
+
+
+    else:
+        next_year = current_year + 1
+        if next_year > max_year:
+            return max_year, True, 'Play'
+        return next_year, False, 'Pause'
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8050)
