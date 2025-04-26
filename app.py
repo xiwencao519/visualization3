@@ -177,7 +177,9 @@ def update_dashboard(country_iso, year):
     fig.update_layout(
         showlegend=False,
         height=600,
-        template="plotly_white"
+        template="plotly_white",
+        paper_bgcolor='rgba(0,0,0,0)',  
+        plot_bgcolor='rgba(0,0,0,0)' 
     )
 
     return fig
