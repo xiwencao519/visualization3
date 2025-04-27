@@ -6,8 +6,8 @@ from dash import dcc, html, Output, Input, State
 from dash import callback_context, exceptions
 
 # Load data
-temp_data = pd.read_csv('temp-1901-2020-all.csv')
-anomaly_data = pd.read_csv('HadCRUT4.csv')
+temp_data = pd.read_csv('global_mon_temp.csv')
+anomaly_data = pd.read_csv('Anormaly_by_year.csv')
 
 month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 x_vals = list(range(12))
